@@ -191,7 +191,7 @@ class AcneDetector:
                     adjusted_contour = contour + [x + eye_x, y + eye_y + int(eye_h / 2)]  # Add offset to each point
                     adjusted_contours.append(adjusted_contour)
                 sorted_contours = sorted(adjusted_contours, key=cv2.contourArea, reverse=True)
-                cv2.drawContours(original_image, [sorted_contours[0]], -1, (0, 255, 0), 2)  # Green color, 2-pixel thickness
+                cv2.drawContours(original_image, [sorted_contours[0]], -1, (0, 0, 255), 2)  # Green color, 2-pixel thickness
 
         # display the image with detected eyes
         cv2.imshow('Final Detection', original_image)
