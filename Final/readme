@@ -1,1 +1,8 @@
 Before running the Final.py, please download the required files into the same folder
+"haarcascade_eye.xml"
+"haarcascade_frontalface_default.xml"
+"shape_predictor_68_face_landmarks.dat"
+"nodule"
+"papule"
+"pustule"
+
