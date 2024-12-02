@@ -1,9 +1,25 @@
-Before running the Final.py, please download the required files into the same folder
-"haarcascade_eye.xml"
-"haarcascade_frontalface_default.xml"
-"shape_predictor_68_face_landmarks.dat"
-"nodule"
-"papule"
-"pustule"
+# Facial Acne and Eye Bags Recognition
 
-The code realizes the recognition of facial acne and eye bags. The user inputs a picture and then labels the acne and eye bags in the picture. It will also give the skin condition a score and class the type of acne.
+This project implements the recognition of facial acne and eye bags. By inputting a picture, the program labels acne and eye bags, provides a skin condition score, and classifies the types of acne.
+
+## Features
+- Detects and labels acne and eye bags on the face.
+- Classifies acne into types: `nodule`, `papule`, `pustule`.
+- Calculates a skin condition score.
+
+## Prerequisites
+Before running the script, ensure you have downloaded the following files into the same folder as `Final.py`:
+
+1. `haarcascade_eye.xml`
+2. `haarcascade_frontalface_default.xml`
+3. `shape_predictor_68_face_landmarks.dat`
+4. `nodule` (folder or data file)
+5. `papule` (folder or data file)
+6. `pustule` (folder or data file)
+
+## Installation
+1. Clone this repository:
+   ```bash
+   git clone https://github.com/your_username/your_repository.git
+   cd your_repository
+
