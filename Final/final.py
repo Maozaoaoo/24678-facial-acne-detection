@@ -9,9 +9,17 @@ class FaceMasker:
         self.detector = dlib.get_frontal_face_detector()
         self.predictor = dlib.shape_predictor("shape_predictor_68_face_landmarks.dat")
 
+    def resize_image(self, image, target_width=500):
+        h, w = image.shape[:2]
+        aspect_ratio = float(h) / float(w)
+        target_height = int(target_width * aspect_ratio)
+        return cv2.resize(image, (target_width, target_height))
+
+
     def mask_out_mouth_and_eyes(self, image):
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         faces = self.detector(gray)
+
         for face in faces:
             landmarks = self.predictor(gray, face)
 
@@ -89,20 +97,7 @@ class AcneDetector:
 
         return a_normalized
 
-    def calculate_gradient(self, a_channel):
-        """Calculate the gradient magnitude of the a-channel."""
-        grad_x = cv2.Sobel(a_channel, cv2.CV_64F, 1, 0, ksize=5)
-        grad_y = cv2.Sobel(a_channel, cv2.CV_64F, 0, 1, ksize=5)
-        gradient_magnitude = cv2.magnitude(grad_x, grad_y)
-        gradient_magnitude = cv2.normalize(gradient_magnitude, None, 0, 255, cv2.NORM_MINMAX)
-        return gradient_magnitude
-
-    def calculate_laplacian(self, a_channel):
-        """Calculate the Laplacian of the a-channel to emphasize regions with high curvature."""
-        laplacian = cv2.Laplacian(a_channel, cv2.CV_64F, ksize=5)
-        laplacian = cv2.normalize(laplacian, None, 0, 255, cv2.NORM_MINMAX)
-        return laplacian
-    def calculate_simi(slef, image1, image2):
+    def calculate_simi(self, image1, image2):
         # Convert both images to grayscale
         gray1 = cv2.cvtColor(image1, cv2.COLOR_BGR2GRAY)
         gray2 = cv2.cvtColor(image2, cv2.COLOR_BGR2GRAY)
@@ -148,13 +143,6 @@ class AcneDetector:
         print("Number of papule: "+str(num_papule))
         print("Number of pustule: "+str(num_pustule))
         print("Number of nodule: "+str(num_nodule))
-
-    def detect_peaks(self, laplacian, red_mask, min_distance=5):
-        """Detect peaks based on the Laplacian (second derivative) and filter by red mask."""
-        laplacian_blurred = cv2.GaussianBlur(laplacian, (5, 5), sigmaX=2, sigmaY=2)
-        y_coords, x_coords = np.where(laplacian_blurred > np.percentile(laplacian_blurred, 99))
-        peaks = [(x, y) for x, y in zip(x_coords, y_coords) if red_mask[y, x] > 0]
-        return peaks
 
     def plot_contours(self, image, red_mask):
         """Plot contours around the detected red regions."""
@@ -224,18 +212,16 @@ if __name__ == "__main__":
         image = cv2.imread(image_path)
         if image is None:
             raise Exception("Failed to load image")
-        original_image = image.copy()
 
         face_masker = FaceMasker()
+        image = face_masker.resize_image(image)
+        original_image = image.copy()
         masked_face = face_masker.mask_face(image)
         masked_image = face_masker.mask_out_mouth_and_eyes(masked_face)
 
         acne_detector = AcneDetector()
         a_channel = acne_detector.visualize_a_channel(masked_image)
         red_mask = acne_detector.find_red_regions(a_channel)
-        gradient_magnitude = acne_detector.calculate_gradient(a_channel)
-        laplacian = acne_detector.calculate_laplacian(a_channel)
-        peaks = acne_detector.detect_peaks(laplacian, red_mask)
         acne_detector.plot_contours(masked_image, red_mask)
         acne_detector.eye_detection(image)
         acne_detector.class_acne(image,red_mask)
